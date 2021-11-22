@@ -66,80 +66,89 @@ def spawnObject(object_original):
     bpy.ops.screen.animation_play()
 
 def createTilingDuplicates(object):
-        tile_size = bpy.context.scene.tileSize
+    if not is_in_scene(object):
+        return
+    
+    tile_size = bpy.context.scene.tileSize
+    
+    bpy.ops.object.visual_transform_apply()
+    object.rigid_body.type = 'PASSIVE'
+    
+    maxDimensionValue = -1
+    objectOutOfView = False
+    
+    '''
+    for value in object.dimensions:
+        if value > maxDimensionValue:
+            maxDimensionValue = value
+    
+    location_values = [ object.location.x, object.location.y ]
+    
+    for value in location_values:
+        if abs(value) > (tile_size / 2) + maxDimensionValue:
+            objectOutOfView = True
+            break
+    '''
+    
+    if not objectOutOfView:
+        object_duplicate_top = object.copy()
+        object_duplicate_top.data = object.data.copy()
+        object_duplicate_top.animation_data_clear()
+        object_duplicate_top.location.y += tile_size
         
-        bpy.ops.object.visual_transform_apply()
-        object.rigid_body.type = 'PASSIVE'
+        object_duplicate_top_left = object.copy()
+        object_duplicate_top_left.data = object.data.copy()
+        object_duplicate_top_left.animation_data_clear()
+        object_duplicate_top_left.location.x -= tile_size
+        object_duplicate_top_left.location.y += tile_size
         
-        maxDimensionValue = -1
-        objectOutOfView = False
+        object_duplicate_top_right = object.copy()
+        object_duplicate_top_right.data = object.data.copy()
+        object_duplicate_top_right.animation_data_clear()
+        object_duplicate_top_right.location.x += tile_size
+        object_duplicate_top_right.location.y += tile_size
         
-        '''
-        for value in object.dimensions:
-            if value > maxDimensionValue:
-                maxDimensionValue = value
+        object_duplicate_bottom = object.copy()
+        object_duplicate_bottom.data = object.data.copy()
+        object_duplicate_bottom.animation_data_clear()
+        object_duplicate_bottom.location.y -= tile_size
         
-        location_values = [ object.location.x, object.location.y ]
+        object_duplicate_bottom_left = object.copy()
+        object_duplicate_bottom_left.data = object.data.copy()
+        object_duplicate_bottom_left.animation_data_clear()
+        object_duplicate_bottom_left.location.x -= tile_size
+        object_duplicate_bottom_left.location.y -= tile_size
         
-        for value in location_values:
-            if abs(value) > (tile_size / 2) + maxDimensionValue:
-                objectOutOfView = True
-                break
-        '''
+        object_duplicate_bottom_right = object.copy()
+        object_duplicate_bottom_right.data = object.data.copy()
+        object_duplicate_bottom_right.animation_data_clear()
+        object_duplicate_bottom_right.location.x += tile_size
+        object_duplicate_bottom_right.location.y -= tile_size
         
-        if not objectOutOfView:
-            object_duplicate_top = object.copy()
-            object_duplicate_top.data = object.data.copy()
-            object_duplicate_top.animation_data_clear()
-            object_duplicate_top.location.y += tile_size
-            
-            object_duplicate_top_left = object.copy()
-            object_duplicate_top_left.data = object.data.copy()
-            object_duplicate_top_left.animation_data_clear()
-            object_duplicate_top_left.location.x -= tile_size
-            object_duplicate_top_left.location.y += tile_size
-            
-            object_duplicate_top_right = object.copy()
-            object_duplicate_top_right.data = object.data.copy()
-            object_duplicate_top_right.animation_data_clear()
-            object_duplicate_top_right.location.x += tile_size
-            object_duplicate_top_right.location.y += tile_size
-            
-            object_duplicate_bottom = object.copy()
-            object_duplicate_bottom.data = object.data.copy()
-            object_duplicate_bottom.animation_data_clear()
-            object_duplicate_bottom.location.y -= tile_size
-            
-            object_duplicate_bottom_left = object.copy()
-            object_duplicate_bottom_left.data = object.data.copy()
-            object_duplicate_bottom_left.animation_data_clear()
-            object_duplicate_bottom_left.location.x -= tile_size
-            object_duplicate_bottom_left.location.y -= tile_size
-            
-            object_duplicate_bottom_right = object.copy()
-            object_duplicate_bottom_right.data = object.data.copy()
-            object_duplicate_bottom_right.animation_data_clear()
-            object_duplicate_bottom_right.location.x += tile_size
-            object_duplicate_bottom_right.location.y -= tile_size
-            
-            object_duplicate_left = object.copy()
-            object_duplicate_left.data = object.data.copy()
-            object_duplicate_left.animation_data_clear()
-            object_duplicate_left.location.x -= tile_size
-            
-            object_duplicate_right = object.copy()
-            object_duplicate_right.data = object.data.copy()
-            object_duplicate_right.animation_data_clear()
-            object_duplicate_right.location.x += tile_size
-            
-            bpy.data.collections[collection_name].objects.link(object_duplicate_top)
-            bpy.data.collections[collection_name].objects.link(object_duplicate_top_left)
-            bpy.data.collections[collection_name].objects.link(object_duplicate_top_right)
-            bpy.data.collections[collection_name].objects.link(object_duplicate_bottom)
-            bpy.data.collections[collection_name].objects.link(object_duplicate_bottom_left)
-            bpy.data.collections[collection_name].objects.link(object_duplicate_bottom_right)
-            bpy.data.collections[collection_name].objects.link(object_duplicate_left)
-            bpy.data.collections[collection_name].objects.link(object_duplicate_right)
+        object_duplicate_left = object.copy()
+        object_duplicate_left.data = object.data.copy()
+        object_duplicate_left.animation_data_clear()
+        object_duplicate_left.location.x -= tile_size
+        
+        object_duplicate_right = object.copy()
+        object_duplicate_right.data = object.data.copy()
+        object_duplicate_right.animation_data_clear()
+        object_duplicate_right.location.x += tile_size
+        
+        bpy.data.collections[collection_name].objects.link(object_duplicate_top)
+        bpy.data.collections[collection_name].objects.link(object_duplicate_top_left)
+        bpy.data.collections[collection_name].objects.link(object_duplicate_top_right)
+        bpy.data.collections[collection_name].objects.link(object_duplicate_bottom)
+        bpy.data.collections[collection_name].objects.link(object_duplicate_bottom_left)
+        bpy.data.collections[collection_name].objects.link(object_duplicate_bottom_right)
+        bpy.data.collections[collection_name].objects.link(object_duplicate_left)
+        bpy.data.collections[collection_name].objects.link(object_duplicate_right)
+
+def is_in_scene(object):
+    for obj in bpy.context.scene.objects:
+        if obj == object:
+            return True
+    return False
 
 class RTK_OT_SpawnPhysicsObjects(bpy.types.Operator):
     bl_idname = "rtk.spawn_physics_objects"
@@ -200,6 +209,9 @@ class RTK_OT_RestartSimulation(bpy.types.Operator):
         global current_simulating_object
         global isSimulating
         
+        if not is_in_scene(current_simulating_object):
+            return {'FINISHED'}
+        
         grid_size = bpy.context.scene.targetGridSize
         spawn_height = bpy.context.scene.spawnHeight
         tile_size = bpy.context.scene.tileSize
@@ -239,6 +251,7 @@ class RTK_OT_StopSimulation(bpy.types.Operator):
         for object in bpy.data.objects:
             object.select_set(False)
         
+        '''
         # Select objects in physics collection
         for object in physicsCollection.objects:
             object.select_set(True)
@@ -248,6 +261,7 @@ class RTK_OT_StopSimulation(bpy.types.Operator):
         
         # Join all objects
         bpy.ops.object.join()
+        '''
         
         current_simulating_object = None
         isSimulating = False
@@ -263,6 +277,7 @@ class RTK_PT_Tools(bpy.types.Panel):
 
     def draw(self, context):
         global isSimulating
+        global current_simulating_object
         
         layout = self.layout
         scene = bpy.context.scene
@@ -283,7 +298,8 @@ class RTK_PT_Tools(bpy.types.Panel):
         layout.operator(RTK_OT_SpawnPhysicsObjects.bl_idname)
         
         if isSimulating:
-            layout.operator(RTK_OT_RestartSimulation.bl_idname)
+            if is_in_scene(current_simulating_object):
+                layout.operator(RTK_OT_RestartSimulation.bl_idname)
             layout.operator(RTK_OT_StopSimulation.bl_idname)
 
 
